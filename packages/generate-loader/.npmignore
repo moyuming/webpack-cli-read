@@ -1,0 +1,5 @@
+test/fixtures
+types
+templates/test
+*.ts
+tsconfig.json
