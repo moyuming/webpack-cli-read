@@ -42,21 +42,20 @@ Usage: webpack-cli [options]
 For more information, see https://webpack.js.org/api/cli/.`);
 
 	require("./config/config-yargs")(yargs);
-
-	// yargs will terminate the process early when the user uses help or version.
-	// This causes large help outputs to be cut short (https://github.com/nodejs/node/wiki/API-changes-between-v0.10-and-v4#process).
-	// To prevent this we use the yargs.parse API and exit the process normally
+	// 当用户使用help or version命令时，yargs将尽早终止该过程
+	// 这会导致大量帮助输出被缩短 (https://github.com/nodejs/node/wiki/API-changes-between-v0.10-and-v4#process).
+	// 为了防止这种情况，我们使用yargs.parse API并正常退出该过程
 	yargs.parse(process.argv.slice(2), (err, argv, output) => {
 		Error.stackTraceLimit = 30;
 
-		// arguments validation failed
+		// arguments 验证失败
 		if (err && output) {
 			console.error(output);
 			process.exitCode = 1;
 			return;
 		}
 
-		// help or version info
+		// help or version 信息
 		if (output) {
 			console.log(output);
 			return;
@@ -108,6 +107,7 @@ For more information, see https://webpack.js.org/api/cli/.`);
 		}
 
 		/**
+		 * 当出现--silent标志时，将使用具有非操作写入方法的对象代替process.stout
 		 * When --silent flag is present, an object with a no-op write method is
 		 * used in place of process.stout
 		 */
@@ -135,9 +135,10 @@ For more information, see https://webpack.js.org/api/cli/.`);
 			}
 
 			const firstOptions = [].concat(options)[0];
+			// webpack预设presetToOptions
 			const statsPresetToOptions = require("webpack").Stats.presetToOptions;
 
-			let outputOptions = options.stats;
+			let outputOptions = options.stats;//输出option
 			if (typeof outputOptions === "boolean" || typeof outputOptions === "string") {
 				outputOptions = statsPresetToOptions(outputOptions);
 			} else if (!outputOptions) {
@@ -282,7 +283,7 @@ For more information, see https://webpack.js.org/api/cli/.`);
 
 				throw err;
 			}
-
+			//使用progress插件
 			if (argv.progress) {
 				const ProgressPlugin = require("webpack").ProgressPlugin;
 				new ProgressPlugin({
@@ -309,7 +310,7 @@ For more information, see https://webpack.js.org/api/cli/.`);
 
 			function compilerCallback(err, stats) {
 				if (!options.watch || err) {
-					// Do not keep cache anymore
+					// 不再保留缓存
 					compiler.purgeInputFileSystem();
 				}
 				if (err) {
